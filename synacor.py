@@ -11,8 +11,6 @@ MAX_VALID = 32775
 HEX_15BIT = 0x7FFF
 NUM_REGISTERS = 8
 
-debug = False
-
 
 class VirtualMachine:
     def __init__(self, arch_spec_path, binary_path, disassemble_path):
@@ -29,6 +27,7 @@ class VirtualMachine:
         if len(sys.argv) == 2 and sys.argv[1] == '-i':
             self.input_stack = []
             self.input_writing = ''
+        self.debug = False
 
     @staticmethod
     def read_instructions_map(input_path):
@@ -131,10 +130,10 @@ class VirtualMachine:
         instruction_code = self.read_from_memory()[0]
         name, argc = self.instructions_map[instruction_code]
         argv = self.read_from_memory(n=argc)
-        if name != 'out' and debug:
+        if name != 'out' and self.debug:
             print('\nRunning:', self.current_address, name, argv)
         getattr(self, self.fix_name(name))(*argv)
-        if name != 'out' and debug:
+        if name != 'out' and self.debug:
             print('Registers after:', self.registers)
 
     def print_registers(self):
@@ -243,8 +242,12 @@ class VirtualMachine:
             c = sys.stdin.read(1)
             if c == ':':
                 command = input('Command: ')
-                if command == 'regs':
+                if command == 'dump':
                     self.print_registers()
+                elif command == 'debug':
+                    self.debug = True
+                elif command == 'nodebug':
+                    self.debug = False
         num = ord(c)
         self.set(a, num)
 
