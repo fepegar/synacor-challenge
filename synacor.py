@@ -26,6 +26,9 @@ class VirtualMachine:
             self.registers[register] = 0
         self.input_stack = answers.get_answers()
         self.input_writing = deque(self.input_stack.popleft())
+        if len(sys.argv) == 2 and sys.argv[1] == '-i':
+            self.input_stack = []
+            self.input_writing = ''
 
     @staticmethod
     def read_instructions_map(input_path):
@@ -134,6 +137,10 @@ class VirtualMachine:
         if name != 'out' and debug:
             print('Registers after:', self.registers)
 
+    def print_registers(self):
+        for k, v in self.registers.items():
+            print(f'{self.parse(k, string=True)}: {v}')
+
     def run(self):
         while True:
             self.run_next_instruction()
@@ -234,6 +241,10 @@ class VirtualMachine:
             print(c, end='')
         else:
             c = sys.stdin.read(1)
+            if c == ':':
+                command = input('Command: ')
+                if command == 'regs':
+                    self.print_registers()
         num = ord(c)
         self.set(a, num)
 
