@@ -4,12 +4,15 @@ import struct
 from collections import deque
 from os.path import join, dirname, getsize
 
+import answers
+
 MIN_REGISTER = 32768
 MAX_VALID = 32775
 HEX_15BIT = 0x7FFF
 NUM_REGISTERS = 8
 
 debug = False
+
 
 class VirtualMachine:
     def __init__(self, arch_spec_path, binary_path, disassemble_path):
@@ -21,6 +24,8 @@ class VirtualMachine:
         self.registers = {}
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
+        self.input_stack = answers.get_answers()
+        self.input_writing = deque(self.input_stack.popleft())
 
     @staticmethod
     def read_instructions_map(input_path):
@@ -207,7 +212,6 @@ class VirtualMachine:
 
     def call(self, a):
         self.push(self.current_address)
-        # print('Jumping to', a, f'({self.parse(a)}):', self.memory[self.parse(a)])
         self.jmp(self.parse(a))
 
     def ret(self):
@@ -221,8 +225,15 @@ class VirtualMachine:
         print(char, end='')
 
     def in_(self, a):
-        # written = raw_input()
-        c = sys.stdin.read(1)
+        if self.input_writing:
+            c = self.input_writing.popleft()
+            print(c, end='')
+        elif self.input_stack:
+            self.input_writing = deque(self.input_stack.popleft())
+            c = self.input_writing.popleft()
+            print(c, end='')
+        else:
+            c = sys.stdin.read(1)
         num = ord(c)
         self.set(a, num)
 
@@ -237,8 +248,6 @@ def main():
     binary_path = join(dirname(__file__), 'challenge.bin')
     disassemble_path = join(dirname(__file__), 'disassemble.txt')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path, disassemble_path)
-    virtual_machine.disassemble()
-    # print(virtual_machine.memory[1540])
     virtual_machine.run()
 
 
