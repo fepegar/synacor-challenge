@@ -2,7 +2,7 @@
 import sys
 import struct
 from collections import deque
-from os.path import join, dirname, getsize
+from os.path import join, dirname
 
 MIN_REGISTER = 32768
 MAX_VALID = 32775
@@ -33,11 +33,9 @@ class VirtualMachine:
 
     def read_program(self, binary_path):
         memory = {}
-        binary_size = getsize(binary_path)
         with open(binary_path, 'rb') as f:
-            while self.current_address < binary_size // 2:
+            while True:
                 next_instruction = self.read_next_instruction(f)
-                # print('Read:', next_instruction)
                 if next_instruction is None:
                     break
                 if next_instruction is not None:
@@ -189,7 +187,7 @@ def main():
     arch_spec_path = join(dirname(__file__), 'arch-spec')
     binary_path = join(dirname(__file__), 'challenge.bin')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path)
-    # virtual_machine.run()
+    virtual_machine.run()
 
 
 if __name__ == '__main__':
