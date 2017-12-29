@@ -14,7 +14,7 @@ def main():
         a, b, c, d, e = permutation
         if a + b * c**2 + d**3 - e == 399:
             for n in permutation:
-                print(COINS[n])
+                print(COINS[n], n)
             break
 
 
