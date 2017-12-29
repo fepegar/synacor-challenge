@@ -1,8 +1,8 @@
 
 import sys
 import struct
-from os.path import join, dirname
-from collections import deque, defaultdict
+from collections import deque
+from os.path import join, dirname, getsize
 
 MIN_REGISTER = 32768
 MAX_VALID = 32775
@@ -33,34 +33,35 @@ class VirtualMachine:
 
     def read_program(self, binary_path):
         memory = {}
+        binary_size = getsize(binary_path)
         with open(binary_path, 'rb') as f:
-            while True:
-            # for _ in range(830):
+            while self.current_address < binary_size // 2:
                 next_instruction = self.read_next_instruction(f)
-                print('Read:', next_instruction)
+                # print('Read:', next_instruction)
                 if next_instruction is None:
                     break
                 if next_instruction is not None:
                     address, name, argv = next_instruction
-                    # if address == 838: break
                     memory[address] = name, argv
         return memory
 
     def read_next_instruction(self, file):
-        address = file.tell() // 2
-        instruction_code = self.read_word(file)
-        # print(address, instruction_code)
-        if instruction_code == '':  # EOF
-            return None
+        instruction_code = -1
+        while instruction_code not in self.instructions_map:
+            if instruction_code is None:
+                return None
+            instruction_code = self.read_word(file)
         name, argc = self.instructions_map[instruction_code]
         argv = self.read_words(file, n=argc)
+        address = file.tell() // 2
         return address, name, argv
 
     def read_word(self, file):
         read_word = file.read(2)
-        # print(read_word)
-        word, = struct.unpack('<H', read_word)
-        return word
+        if not read_word:  # EOF
+            return None
+        number, = struct.unpack('<H', read_word)
+        return number
 
     def read_words(self, file, n=1):
         return [self.read_word(file) for _ in range(n)]
@@ -188,7 +189,7 @@ def main():
     arch_spec_path = join(dirname(__file__), 'arch-spec')
     binary_path = join(dirname(__file__), 'challenge.bin')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path)
-    virtual_machine.run()
+    # virtual_machine.run()
 
 
 if __name__ == '__main__':
