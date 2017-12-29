@@ -7,7 +7,7 @@ from collections import deque, defaultdict
 MIN_REGISTER = 32768
 MAX_VALID = 32775
 HEX_15BIT = 0x7FFF
-
+NUM_REGISTERS = 8
 
 
 class VirtualMachine:
@@ -18,6 +18,9 @@ class VirtualMachine:
         self.binary_file = None
         self.current_address = 0
         self.memory = self.read_program(binary_path)
+        self.registers = {}
+        for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
+            self.registers[register] = 0
 
     # def initialize_memory(self):
     #     memory = {}
@@ -40,13 +43,14 @@ class VirtualMachine:
         memory = {}
         with open(binary_path, 'rb') as f:
             while True:
-            # for _ in range(350):
+            # for _ in range(830):
                 next_instruction = self.read_next_instruction(f)
-                print(next_instruction)
+                print('Read:', next_instruction)
                 if next_instruction is None:
                     break
                 if next_instruction is not None:
                     address, name, argv = next_instruction
+                    # if address == 838: break
                     memory[address] = name, argv
         return memory
 
@@ -73,7 +77,7 @@ class VirtualMachine:
         if n < 0 or n > MAX_VALID:
             raise ValueError('Invalid number:', n)
         elif n >= MIN_REGISTER:
-            return self.registers[n - MIN_REGISTER]
+            return self.registers[n]
         else:
             return n
 
@@ -84,13 +88,18 @@ class VirtualMachine:
 
     def run_next_instruction(self):
         name, argv = self.memory[self.current_address]
+        if name != 'out':
+            print('\nRunning:', self.current_address, name, argv)
         argc = len(argv)
         self.current_address += 1 + argc
         getattr(self, self.fix_name(name))(*argv)
+        if name != 'out':
+            print('Registers after:', self.registers)
 
     def run(self):
         while True:
             self.run_next_instruction()
+
 
     ### INSTRUCTIONS ###
     def halt(self):
