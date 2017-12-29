@@ -9,13 +9,15 @@ MAX_VALID = 32775
 HEX_15BIT = 0x7FFF
 NUM_REGISTERS = 8
 
+debug = False
 
 class VirtualMachine:
     def __init__(self, arch_spec_path, binary_path):
         self.instructions_map = self.read_instructions_map(arch_spec_path)
         self.stack = deque()
         self.current_address = 0
-        self.memory = self.read_program(binary_path)
+        self.memory = {}
+        self.read_program(binary_path)
         self.registers = {}
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
@@ -32,26 +34,27 @@ class VirtualMachine:
         return instructions
 
     def read_program(self, binary_path):
-        memory = {}
         with open(binary_path, 'rb') as f:
             while True:
                 next_instruction = self.read_next_instruction(f)
+                if debug: print('Read:', next_instruction)
                 if next_instruction is None:
                     break
                 if next_instruction is not None:
                     address, name, argv = next_instruction
-                    memory[address] = name, argv
-        return memory
+                    self.memory[address] = name, argv
 
     def read_next_instruction(self, file):
-        instruction_code = -1
+        address = file.tell() // 2
+        instruction_code = self.read_word(file)
         while instruction_code not in self.instructions_map:
             if instruction_code is None:
                 return None
             instruction_code = self.read_word(file)
+            self.memory[address] = 0
+            address += 1
         name, argc = self.instructions_map[instruction_code]
         argv = self.read_words(file, n=argc)
-        address = file.tell() // 2
         return address, name, argv
 
     def read_word(self, file):
@@ -79,12 +82,12 @@ class VirtualMachine:
 
     def run_next_instruction(self):
         name, argv = self.memory[self.current_address]
-        if name != 'out':
+        if name != 'out' and debug:
             print('\nRunning:', self.current_address, name, argv)
         argc = len(argv)
         self.current_address += 1 + argc
         getattr(self, self.fix_name(name))(*argv)
-        if name != 'out':
+        if name != 'out' and debug:
             print('Registers after:', self.registers)
 
     def run(self):
