@@ -50,8 +50,8 @@ class VirtualMachine:
         while instruction_code not in self.instructions_map:
             if instruction_code is None:
                 return None
+            self.memory[address] = instruction_code
             instruction_code = self.read_word(file)
-            self.memory[address] = 0
             address += 1
         name, argc = self.instructions_map[instruction_code]
         argv = self.read_words(file, n=argc)
@@ -160,6 +160,7 @@ class VirtualMachine:
         self.set(a, result)
 
     def rmem(self, a, b):
+        print('Store in', a, 'what I have in memory address', b)
         self.set(a, self.memory[self.parse(b)])
 
     def wmem(self, a, b):
