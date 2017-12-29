@@ -40,28 +40,12 @@ class VirtualMachine:
                 memory[address] = self.read_word(f)
         return memory
 
-    def read_next_instruction(self, file):
-        address = file.tell() // 2
-        instruction_code = self.read_word(file)
-        while instruction_code not in self.instructions_map:
-            if instruction_code is None:
-                return None
-            self.memory[address] = instruction_code
-            instruction_code = self.read_word(file)
-            address += 1
-        name, argc = self.instructions_map[instruction_code]
-        argv = self.read_words(file, n=argc)
-        return address, name, argv
-
     def read_word(self, file):
         read_word = file.read(2)
         if not read_word:  # EOF
             return None
         number, = struct.unpack('<H', read_word)
         return number
-
-    def read_words(self, file, n=1):
-        return [self.read_word(file) for _ in range(n)]
 
     def parse(self, n):
         if n < 0 or n > MAX_VALID:
@@ -76,12 +60,19 @@ class VirtualMachine:
             name += '_'
         return name
 
+    def read_from_memory(self, n=1):
+        read = []
+        for _ in range(n):
+            read.append(self.memory[self.current_address])
+            self.current_address += 1
+        return read
+
     def run_next_instruction(self):
-        name, argv = self.memory[self.current_address]
+        instruction_code = self.read_from_memory()[0]
+        name, argc = self.instructions_map[instruction_code]
+        argv = self.read_from_memory(n=argc)
         if name != 'out' and debug:
             print('\nRunning:', self.current_address, name, argv)
-        argc = len(argv)
-        self.current_address += 1 + argc
         getattr(self, self.fix_name(name))(*argv)
         if name != 'out' and debug:
             print('Registers after:', self.registers)
@@ -186,7 +177,7 @@ def main():
     arch_spec_path = join(dirname(__file__), 'arch-spec')
     binary_path = join(dirname(__file__), 'challenge.bin')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path)
-    # virtual_machine.run()
+    virtual_machine.run()
 
 
 if __name__ == '__main__':
