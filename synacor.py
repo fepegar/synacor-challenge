@@ -166,7 +166,9 @@ class VirtualMachine:
         print(chr(self.parse(a)), end='')
 
     def in_(self, a):
-        self.set(ord(a), input())
+        c = sys.stdin.read(1)
+        num = ord(c)
+        self.set(a, num)
 
     def noop(self):
         pass
