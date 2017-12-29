@@ -163,7 +163,7 @@ class VirtualMachine:
             self.halt()
 
     def out(self, a):
-        print(chr(a), end='')
+        print(chr(self.parse(a)), end='')
 
     def in_(self, a):
         self.set(ord(a), input())
