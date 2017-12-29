@@ -160,11 +160,10 @@ class VirtualMachine:
         self.set(a, result)
 
     def rmem(self, a, b):
-        print('Store in', a, 'what I have in memory address', b)
         self.set(a, self.memory[self.parse(b)])
 
     def wmem(self, a, b):
-        self.set(a, self.parse(b))
+        self.memory[self.parse(a)] = self.parse(b)
 
     def call(self, a):
         self.push(self.current_address)
