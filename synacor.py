@@ -21,7 +21,8 @@ class VirtualMachine:
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
 
-    def read_instructions_map(self, input_path):
+    @staticmethod
+    def read_instructions_map(input_path):
         with open(input_path) as f:
             lines = f.readlines()
         instructions_lines = lines[35::2]
@@ -40,7 +41,8 @@ class VirtualMachine:
                 memory[address] = self.read_word(f)
         return memory
 
-    def read_word(self, file):
+    @staticmethod
+    def read_word(file):
         read_word = file.read(2)
         if not read_word:  # EOF
             return None
@@ -55,7 +57,8 @@ class VirtualMachine:
         else:
             return n
 
-    def fix_name(self, name):
+    @staticmethod
+    def fix_name(name):
         if name in ('and', 'or', 'not', 'in'):
             name += '_'
         return name
@@ -83,7 +86,8 @@ class VirtualMachine:
 
 
     ### INSTRUCTIONS ###
-    def halt(self):
+    @staticmethod
+    def halt():
         sys.exit(0)
 
     def set(self, a, b):
@@ -170,7 +174,8 @@ class VirtualMachine:
         num = ord(c)
         self.set(a, num)
 
-    def noop(self):
+    @staticmethod
+    def noop():
         pass
 
 
