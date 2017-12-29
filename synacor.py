@@ -4,8 +4,6 @@ import struct
 from collections import deque
 from os.path import join, dirname, getsize
 
-import answers
-
 MIN_REGISTER = 32768
 MAX_VALID = 32775
 HEX_15BIT = 0x7FFF
@@ -22,9 +20,11 @@ class VirtualMachine:
         self.registers = {}
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
-        self.input_stack = answers.get_answers()
-        self.input_writing = deque(self.input_stack.popleft())
-        if len(sys.argv) == 2 and sys.argv[1] == '-i':
+        if len(sys.argv) == 2 and sys.argv[1] == '-a':
+            import answers
+            self.input_stack = answers.get_answers()
+            self.input_writing = deque(self.input_stack.popleft())
+        else:
             self.input_stack = []
             self.input_writing = ''
         self.debug = False
@@ -131,14 +131,19 @@ class VirtualMachine:
         name, argc = self.instructions_map[instruction_code]
         argv = self.read_from_memory(n=argc)
         if name != 'out' and self.debug:
-            print('\nRunning:', self.current_address, name, argv)
+            print('Running:', self.current_address, name, argv)
         getattr(self, self.fix_name(name))(*argv)
-        if name != 'out' and self.debug:
-            print('Registers after:', self.registers)
 
     def print_registers(self):
+        print('Registers:')
         for k, v in self.registers.items():
             print(f'{self.parse(k, string=True)}: {v}')
+
+    def print_stack(self):
+        print('Stack:')
+        for address in self.stack:
+            print(address)
+        print()
 
     def run(self):
         while True:
@@ -240,14 +245,18 @@ class VirtualMachine:
             print(c, end='')
         else:
             c = sys.stdin.read(1)
-            if c == ':':
-                command = input('Command: ')
+            if c == '¿':
+                command = input('Command (dump/debug/nodebug/hack): ')
                 if command == 'dump':
+                    print('Im here')
                     self.print_registers()
+                    self.print_stack()
                 elif command == 'debug':
                     self.debug = True
                 elif command == 'nodebug':
                     self.debug = False
+                elif command == 'hack':
+                    self.hack_teleporter()
         num = ord(c)
         self.set(a, num)
 
@@ -255,6 +264,19 @@ class VirtualMachine:
     def noop():
         pass
 
+    def hack_teleporter(self):
+        print('Fixing teleporter...')
+
+        n = 25734
+        self.registers[MAX_VALID] = n
+
+        # set $0, 6
+        self.memory[6027] = 1
+        self.memory[6028] = 32768
+        self.memory[6029] = 6
+
+        # ret
+        self.memory[6030] = 18
 
 
 def main():
@@ -262,7 +284,6 @@ def main():
     binary_path = join(dirname(__file__), 'challenge.bin')
     disassemble_path = join(dirname(__file__), 'disassemble.txt')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path, disassemble_path)
-    virtual_machine.disassemble()
     virtual_machine.run()
 
 
