@@ -65,7 +65,7 @@ class VirtualMachine:
                     continue
                 else:
                     if memory_blocks:
-                        print(f'{memory_block_address:5} memory x{memory_blocks}', file=f)
+                        print(f'{memory_block_address:5}   memory x{memory_blocks}', file=f)
                         memory_blocks = 0
 
                 name, argc = self.instructions_map[instruction_code]
@@ -77,7 +77,7 @@ class VirtualMachine:
 
                 if writing:
                     address = self.current_address - 2 * len(writing) + 1
-                    string = f'{address:5} out   {writing.strip()}'
+                    string = f'{address:5}   out   {writing.strip()}'
                     # print(writing)
                     print(string, file=f)
                     writing = ''
@@ -86,7 +86,7 @@ class VirtualMachine:
 
                 argv = list(map(lambda x: f'{str(x):5}', argv))
                 argv = ' '.join(argv) if argv else ''
-                string = f'{self.current_address:5} {name:5} {argv}'
+                string = f'{self.current_address:5}   {name:5} {argv}'
 
                 # Identify functions
                 if name == 'ret':
@@ -259,6 +259,7 @@ def main():
     binary_path = join(dirname(__file__), 'challenge.bin')
     disassemble_path = join(dirname(__file__), 'disassemble.txt')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path, disassemble_path)
+    virtual_machine.disassemble()
     virtual_machine.run()
 
 
