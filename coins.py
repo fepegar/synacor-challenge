@@ -1,11 +1,22 @@
 from itertools import permutations
 
+COINS = {
+    2: 'red',
+    9: 'blue',
+    5: 'shiny',
+    7: 'concave',
+    3: 'corroded',
+}
+
 def main():
-    coins = 2, 9, 5, 7, 3
-    possible = permutations(coins)
-    for a, b, c, d, e in possible:
+    possible = permutations(COINS.keys())
+    for permutation in possible:
+        a, b, c, d, e = permutation
         if a + b * c**2 + d**3 - e == 399:
-            print(a, b, c, d, e)
+            for n in permutation:
+                print(COINS[n])
+            break
+
 
 if __name__ == '__main__':
     main()
