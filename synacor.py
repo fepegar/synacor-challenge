@@ -14,8 +14,6 @@ class VirtualMachine:
     def __init__(self, arch_spec_path, binary_path):
         self.instructions_map = self.read_instructions_map(arch_spec_path)
         self.stack = deque()
-        self.registers = defaultdict(int)
-        self.binary_file = None
         self.current_address = 0
         self.memory = self.read_program(binary_path)
         self.registers = {}
