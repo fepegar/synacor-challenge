@@ -1,12 +1,12 @@
     1 noop  
     2 noop  
-    4 out   Welcome to the Synacor Challenge!
+    5 out   Welcome to the Synacor Challenge!
 Please record your progress by putting codes like
 this one into the challenge website: SywvTFsISxxn
 
 Executing self-test...
   322 jmp   347  
-  323 out   jmp fails
+  324 out   jmp fails
   343 halt  
   344 noop  
   345 noop  
@@ -27,21 +27,21 @@ Executing self-test...
   366 noop  
   367 noop  
   368 noop  
-  369 out   jmp lands -2
+  370 out   jmp lands -2
   395 halt  
   396 noop  
   397 noop  
-  398 out   jmp lands -1
+  399 out   jmp lands -1
   424 halt  
   425 noop  
   426 noop  
-  427 out   jmp lands +1
+  428 out   jmp lands +1
   453 halt  
   454 noop  
   455 noop  
   456 noop  
   457 noop  
-  458 out   jmp lands +2
+  459 out   jmp lands +2
   484 halt  
   487 jt    0     1074 
   490 jf    1     1074 
@@ -63,11 +63,11 @@ Executing self-test...
   536 jt    reg0  1118 
   540 add   reg0  1     1    
   543 jt    reg0  564  
-  544 out   no add op
+  545 out   no add op
   564 halt  
   568 eq    reg1  reg0  2    
   571 jt    reg1  590  
-  572 out   no eq op
+  573 out   no eq op
   590 halt  
   592 push  reg0 
   594 push  reg1 
@@ -89,7 +89,7 @@ Executing self-test...
   648 or    reg1  28912 19626
   652 eq    reg0  reg1  31994
   655 jt    reg0  684  
-  656 out   no bitwise or
+  657 out   no bitwise or
   684 halt  
   687 not   reg0  0    
   691 eq    reg1  reg0  32767
@@ -169,7 +169,7 @@ Executing self-test...
   934 wmem  937   21   
   937 wmem  938   7    
   939 jmp   941  
-  940 out   ϒwmem opwrite fail
+  941 out   ϒwmem opwrite fail
   978 halt  
   982 add   reg1  10    6080 
   986 add   reg1  reg1  1    
@@ -203,35 +203,35 @@ Executing self-test...
  1070 pop   reg1 
  1072 pop   reg0 
  1074 jmp   2734 
- 1075 out   no jt/jf
+ 1076 out   no jt/jf
  1093 halt  
- 1094 out   nonzero reg
+ 1095 out   nonzero reg
  1118 halt  
- 1119 out   no set op
+ 1120 out   no set op
  1139 halt  
- 1140 out   no gt op
+ 1141 out   no gt op
  1158 halt  
- 1159 out   no stack
+ 1160 out   no stack
  1177 halt  
- 1178 out   no bitwise and
+ 1179 out   no bitwise and
  1208 halt  
- 1209 out   no bitwise not
+ 1210 out   no bitwise not
  1239 halt  
- 1240 out   no rmem op
+ 1241 out   no rmem op
  1262 halt  
- 1263 out   no wmem op
+ 1264 out   no wmem op
  1285 halt  
  1287 jmp   708  
  1289 jmp   731  
- 1290 out   no call op
+ 1291 out   no call op
  1312 halt  
- 1313 out   no modulo math during add or mult
+ 1314 out   no modulo math during add or mult
  1381 halt  
- 1382 out   not hitchhiking
+ 1383 out   not hitchhiking
  1414 halt  
- 1415 out   no mult op
+ 1416 out   no mult op
  1437 halt  
- 1438 out   no mod op
+ 1439 out   no mod op
  1458 halt  
  1460 push  reg0 
  1462 push  reg3 
@@ -263,13 +263,13 @@ Executing self-test...
  1527 pop   reg1 
  1528 ret   
 
- 1529 out   耀
+ 1530 out   耀
  1531 ret   
 
  1533 push  reg1 
  1536 set   reg1  reg2 
  1538 call  2125 
- 1540 out   耀
+ 1541 out   耀
  1542 pop   reg1 
  1543 ret   
 
@@ -485,11 +485,11 @@ Executing self-test...
  2090 push  reg4 
  2092 jmp   2019 
  2095 jt    reg5  2099 
- 2097 out   0
+ 2098 out   0
  2099 jmp   2112 
  2102 jf    reg5  2112 
  2104 pop   reg0 
- 2108 out   耀
+ 2109 out   耀
  2110 add   reg5  reg5  32767
  2112 jmp   2099 
  2114 pop   reg5 
@@ -697,7 +697,7 @@ Executing self-test...
  2821 set   reg0  32   
  2824 set   reg1  25974
  2826 call  1767 
- 2829 out   
+ 2830 out   
  2833 set   reg0  25974
  2836 set   reg1  32   
  2838 call  1571 
@@ -759,7 +759,7 @@ Executing self-test...
  2997 add   reg1  reg0  1    
  3000 rmem  reg0  reg1 
  3002 call  1518 
- 3004 out   
+ 3005 out   
  3006 jmp   3238 
  3008 push  reg0 
  3010 push  reg1 
@@ -774,11 +774,11 @@ Executing self-test...
  3032 jmp   3238 
  3035 rmem  reg0  2732 
  3037 push  reg0 
- 3041 out   ==
+ 3042 out   ==
  3047 add   reg0  reg0  0    
  3050 rmem  reg0  reg0 
  3052 call  1518 
- 3054 out   ==
+ 3055 out   ==
  3062 pop   reg0 
  3064 push  reg0 
  3068 add   reg0  reg0  1    
@@ -795,7 +795,7 @@ Executing self-test...
  3101 add   reg0  reg0  reg1 
  3104 rmem  reg0  reg0 
  3106 call  1518 
- 3108 out   
+ 3109 out   
  3110 pop   reg0 
  3112 push  reg0 
  3114 call  5823 
@@ -818,16 +818,16 @@ Executing self-test...
  3157 rmem  reg0  reg0 
  3160 rmem  reg0  reg0 
  3164 eq    reg2  reg0  1    
- 3167 out   There
+ 3168 out   There
  3181 jt    reg2  3189 
- 3183 out   are
+ 3184 out   are
  3189 jmp   3193 
- 3191 out   is
+ 3192 out   is
  3197 call  2001 
- 3201 out   exit
+ 3202 out   exit
  3211 eq    reg2  reg0  1    
  3214 jt    reg2  3216 
- 3216 out   s:
+ 3217 out   s:
  3222 pop   reg0 
  3224 push  reg0 
  3228 add   reg0  reg0  2    
@@ -1315,7 +1315,7 @@ Executing self-test...
  4261 call  1518 
  4264 set   reg0  reg1 
  4266 call  1518 
- 4268 out   .
+ 4269 out   .
  4274 pop   reg2 
  4276 pop   reg1 
  4278 pop   reg0 
@@ -1360,7 +1360,7 @@ Executing self-test...
  4381 set   reg0  26267
  4383 call  1518 
  4385 pop   reg0 
- 4387 out   
+ 4388 out   
  4391 jmp   4398 
  4393 call  4660 
  4396 set   reg0  26299
@@ -1934,9 +1934,9 @@ Executing self-test...
  5813 pop   reg0 
  5814 ret   
 
- 5816 out   -
+ 5817 out   -
  5820 call  1518 
- 5821 out   
+ 5822 out   
  5823 ret   
 
  5825 push  reg1 

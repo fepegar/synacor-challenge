@@ -68,7 +68,7 @@ class VirtualMachine:
                     continue
 
                 if writing:
-                    address = self.current_address - 2 * len(writing)
+                    address = self.current_address - 2 * len(writing) + 1
                     string = f'{address:5} out   {writing.strip()}'
                     # print(writing)
                     print(string, file=f)
@@ -207,6 +207,7 @@ class VirtualMachine:
 
     def call(self, a):
         self.push(self.current_address)
+        # print('Jumping to', a, f'({self.parse(a)}):', self.memory[self.parse(a)])
         self.jmp(self.parse(a))
 
     def ret(self):
@@ -220,6 +221,7 @@ class VirtualMachine:
         print(char, end='')
 
     def in_(self, a):
+        # written = raw_input()
         c = sys.stdin.read(1)
         num = ord(c)
         self.set(a, num)
@@ -237,7 +239,7 @@ def main():
     virtual_machine = VirtualMachine(arch_spec_path, binary_path, disassemble_path)
     virtual_machine.disassemble()
     # print(virtual_machine.memory[1540])
-    # virtual_machine.run()
+    virtual_machine.run()
 
 
 if __name__ == '__main__':
