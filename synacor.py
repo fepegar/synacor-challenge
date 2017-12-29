@@ -12,11 +12,12 @@ NUM_REGISTERS = 8
 debug = False
 
 class VirtualMachine:
-    def __init__(self, arch_spec_path, binary_path):
+    def __init__(self, arch_spec_path, binary_path, disassemble_path):
         self.instructions_map = self.read_instructions_map(arch_spec_path)
         self.stack = deque()
         self.current_address = 0
         self.memory = self.read_memory(binary_path)
+        self.disassemble_path = disassemble_path
         self.registers = {}
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
@@ -41,6 +42,51 @@ class VirtualMachine:
                 memory[address] = self.read_word(f)
         return memory
 
+    def disassemble(self):
+        print('(Disassembling)')
+        save_address = self.current_address
+        self.current_address = 0
+        with open(self.disassemble_path, 'w') as f:
+            memory_blocks = 0
+            writing = ''
+            while self.current_address < len(self.memory):
+                instruction_code = self.read_from_memory()[0]
+                if instruction_code not in self.instructions_map:
+                    memory_blocks += 1
+                    memory_block_address = self.current_address
+                    continue
+                else:
+                    if memory_blocks:
+                        print(f'{memory_block_address:5} memory x{memory_blocks}', file=f)
+                        memory_blocks = 0
+
+                name, argc = self.instructions_map[instruction_code]
+                argv = self.read_from_memory(n=argc)
+
+                if name == 'out':
+                    writing += chr(argv[0])
+                    continue
+
+                if writing:
+                    address = self.current_address - 2 * len(writing)
+                    string = f'{address:5} out   {writing.strip()}'
+                    # print(writing)
+                    print(string, file=f)
+                    writing = ''
+
+                argv = [self.parse(n, string=True) for n in argv]
+
+                argv = list(map(lambda x: f'{str(x):5}', argv))
+                argv = ' '.join(argv) if argv else ''
+                string = f'{self.current_address:5} {name:5} {argv}'
+
+                # Identify functions
+                if name == 'ret':
+                    string += '\n'
+
+                print(string, file=f)
+        self.current_address = save_address
+
     @staticmethod
     def read_word(file):
         read_word = file.read(2)
@@ -49,11 +95,14 @@ class VirtualMachine:
         number, = struct.unpack('<H', read_word)
         return number
 
-    def parse(self, n):
+    def parse(self, n, string=False):
         if n < 0 or n > MAX_VALID:
             raise ValueError('Invalid number:', n)
         elif n >= MIN_REGISTER:
-            return self.registers[n]
+            if string:
+                return f'reg{n - MIN_REGISTER}'
+            else:
+                return self.registers[n]
         else:
             return n
 
@@ -167,7 +216,8 @@ class VirtualMachine:
             self.halt()
 
     def out(self, a):
-        print(chr(self.parse(a)), end='')
+        char = chr(self.parse(a))
+        print(char, end='')
 
     def in_(self, a):
         c = sys.stdin.read(1)
@@ -183,8 +233,11 @@ class VirtualMachine:
 def main():
     arch_spec_path = join(dirname(__file__), 'arch-spec')
     binary_path = join(dirname(__file__), 'challenge.bin')
-    virtual_machine = VirtualMachine(arch_spec_path, binary_path)
-    virtual_machine.run()
+    disassemble_path = join(dirname(__file__), 'disassemble.txt')
+    virtual_machine = VirtualMachine(arch_spec_path, binary_path, disassemble_path)
+    virtual_machine.disassemble()
+    # print(virtual_machine.memory[1540])
+    # virtual_machine.run()
 
 
 if __name__ == '__main__':
