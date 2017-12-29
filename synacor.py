@@ -2,7 +2,7 @@
 import sys
 import struct
 from collections import deque
-from os.path import join, dirname
+from os.path import join, dirname, getsize
 
 MIN_REGISTER = 32768
 MAX_VALID = 32775
@@ -16,8 +16,7 @@ class VirtualMachine:
         self.instructions_map = self.read_instructions_map(arch_spec_path)
         self.stack = deque()
         self.current_address = 0
-        self.memory = {}
-        self.read_program(binary_path)
+        self.memory = self.read_memory(binary_path)
         self.registers = {}
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
@@ -33,16 +32,13 @@ class VirtualMachine:
             instructions[i] = name, argc
         return instructions
 
-    def read_program(self, binary_path):
+    def read_memory(self, binary_path):
+        memory = {}
+        binary_num_words = getsize(binary_path) // 2
         with open(binary_path, 'rb') as f:
-            while True:
-                next_instruction = self.read_next_instruction(f)
-                if debug: print('Read:', next_instruction)
-                if next_instruction is None:
-                    break
-                if next_instruction is not None:
-                    address, name, argv = next_instruction
-                    self.memory[address] = name, argv
+            for address in range(binary_num_words):
+                memory[address] = self.read_word(f)
+        return memory
 
     def read_next_instruction(self, file):
         address = file.tell() // 2
@@ -190,7 +186,7 @@ def main():
     arch_spec_path = join(dirname(__file__), 'arch-spec')
     binary_path = join(dirname(__file__), 'challenge.bin')
     virtual_machine = VirtualMachine(arch_spec_path, binary_path)
-    virtual_machine.run()
+    # virtual_machine.run()
 
 
 if __name__ == '__main__':
