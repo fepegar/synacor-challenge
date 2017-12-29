@@ -22,12 +22,6 @@ class VirtualMachine:
         for register in range(MIN_REGISTER, MIN_REGISTER + NUM_REGISTERS):
             self.registers[register] = 0
 
-    # def initialize_memory(self):
-    #     memory = {}
-    #     for n in range(MIN_REGISTER):
-    #         memory[n] = 0
-    #     return memory
-
     def read_instructions_map(self, input_path):
         with open(input_path) as f:
             lines = f.readlines()
