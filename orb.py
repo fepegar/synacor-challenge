@@ -26,14 +26,16 @@ SOUTH = (0, -1)
 EAST = (1, 0)
 WEST = (-1, 0)
 
-tried = []
+FIRST_CELL = 22
+MAX_STEPS = 12
+
 while True:
-    n = 22
+    n = FIRST_CELL
     steps = 0
     x, y = 0, 0
     path = []
     operator_found = None
-    while steps < 12:
+    while steps < MAX_STEPS:
         choices = [NORTH, SOUTH, EAST, WEST]
 
         if x == 0:
@@ -68,7 +70,6 @@ while True:
                 print('Eureka!', path)
                 sys.exit(0)
             else:
-                print('Not there:', n)
                 break
         x, y = new_x, new_y
         steps += 1
